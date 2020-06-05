@@ -1,0 +1,33 @@
+#!/bin/bash
+
+rm -rf jdk-8u181-linux-x64.tar.gz
+
+# Download Java from Oracle
+wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u181-b13/96a7b8442fe848ef90c96a2fad6ed6d1/jdk-8u181-linux-x64.tar.gz
+
+mkdir /usr/java/
+tar -zxvf jdk-8u181-linux-x64.tar.gz -C /usr/java/
+
+# Configure Java envrioments
+sed -i '$aexport JAVA_HOME=/usr/java/jdk1.8.0_181' ~/.bashrc
+sed -i '$aexport CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar' ~/.bashrc
+sed -i '$aexport PATH=$JAVA_HOME/bin:$PATH' ~/.bashrc
+
+sed -i '$aexport JAVA_HOME=/usr/java/jdk1.8.0_181' /etc/profile
+sed -i '$aexport JAVA_BIN=$JAVA_HOME/bin' /etc/profile
+sed -i '$aexport JAVA_LIB=$JAVA_HOME/lib' /etc/profile
+sed -i '$aexport CLASSPATH=.:$JAVA_LIB/tools.jar:$JAVA_LIB/dt.jar' /etc/profile
+sed -i '$aexport PATH=$JAVA_HOME/bin:$PATH' /etc/profile
+
+# !!! Specifically, if something wrong, u could check here because its possible to have different orignial PATH. Here, Java path shall be added. But I did in this way for convenience
+sed -i '/^PATH.*/d' /etc/environment
+echo "PATH=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/java/jdk1.8.0_181/lib:/usr/java/jdk1.8.0_181\"" >> /etc/environment
+
+source /etc/profile
+source /etc/environment
+source ~/.bashrc
+
+echo "Before set up ssh-server"
+echo "Please use command 'java -version' to make sure it's complete"
+
+sleep 1

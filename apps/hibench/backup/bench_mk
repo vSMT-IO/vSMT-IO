@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Build dependencies
+sudo apt-get install maven spark git bc
+
+# Particularly, I consider the standalone mode so I didn't added hadoop
+# installing and configuring procedure.
+
+# Install HiBench
+git clone https://github.com/intel-hadoop/HiBench.git
+
+# Prompt for users
+# Note: Now I only applied the benchmarks u asked. And It's capable for all
+# hadoop benchmark to run once u edit the framework.config
+#echo "Please set the appropriate values in HiBench/conf/*.conf, as u need"

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Test and initialize the Benchmark environment
+/usr/local/hadoop/sbin/start-all.sh

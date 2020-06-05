@@ -1,0 +1,585 @@
+Main thread's PID number is 1972
+Main thread is on vCPU 23
+mwait worker is on 24
+mwait worker thread PID number is 1974
+CPU plus 1 worker is on 0
+CPU plus 1 worker thread PID number is 1973
+CPU plus 1 worker is on 1
+CPU plus 1 worker thread PID number is 1975
+mwait worker is on 25
+mwait worker thread PID number is 1976
+CPU plus 1 worker is on 2
+CPU plus 1 worker thread PID number is 1977
+mwait worker is on 26
+mwait worker thread PID number is 1978
+CPU plus 1 worker is on 3
+CPU plus 1 worker thread PID number is 1980
+mwait worker is on 27
+mwait worker thread PID number is 1981
+mwait worker is on 28
+mwait worker thread PID number is 1983
+CPU plus 1 worker is on 4
+CPU plus 1 worker thread PID number is 1982
+CPU plus 1 worker is on 5
+CPU plus 1 worker thread PID number is 1984
+mwait worker is on 29
+mwait worker thread PID number is 1985
+mwait worker is on 30
+mwait worker thread PID number is 1987
+CPU plus 1 worker is on 6
+CPU plus 1 worker thread PID number is 1986
+mwait worker is on 31
+mwait worker thread PID number is 1989
+CPU plus 1 worker is on 7
+CPU plus 1 worker thread PID number is 1988
+CPU plus 1 worker is on 8
+CPU plus 1 worker thread PID number is 1990
+mwait worker is on 32
+mwait worker thread PID number is 1991
+mwait worker is on 33
+mwait worker thread PID number is 1993
+CPU plus 1 worker is on 9
+CPU plus 1 worker thread PID number is 1992
+CPU plus 1 worker is on 10
+CPU plus 1 worker thread PID number is 1994
+mwait worker is on 34
+mwait worker thread PID number is 1995
+CPU plus 1 worker is on 11
+CPU plus 1 worker thread PID number is 1997
+mwait worker is on 35
+mwait worker thread PID number is 1998
+CPU plus 1 worker is on 12
+CPU plus 1 worker thread PID number is 1999
+mwait worker is on 36
+mwait worker thread PID number is 2000
+CPU plus 1 worker is on 13
+CPU plus 1 worker thread PID number is 2001
+mwait worker is on 37
+mwait worker thread PID number is 2002
+mwait worker is on 38
+mwait worker thread PID number is 2004
+CPU plus 1 worker is on 14
+CPU plus 1 worker thread PID number is 2003
+CPU plus 1 worker is on 15
+CPU plus 1 worker thread PID number is 2005
+mwait worker is on 39
+mwait worker thread PID number is 2006
+mwait worker is on 40
+mwait worker thread PID number is 2008
+CPU plus 1 worker is on 16
+CPU plus 1 worker thread PID number is 2007
+mwait worker is on 41
+mwait worker thread PID number is 2010
+CPU plus 1 worker is on 17
+CPU plus 1 worker thread PID number is 2009
+CPU plus 1 worker is on 18
+CPU plus 1 worker thread PID number is 2011
+mwait worker is on 42
+mwait worker thread PID number is 2012
+mwait worker is on 43
+mwait worker thread PID number is 2014
+CPU plus 1 worker is on 19
+CPU plus 1 worker thread PID number is 2013
+CPU plus 1 worker is on 20
+CPU plus 1 worker thread PID number is 2015
+mwait worker is on 44
+mwait worker thread PID number is 2016
+CPU plus 1 worker is on 21
+CPU plus 1 worker thread PID number is 2017
+mwait worker is on 45
+mwait worker thread PID number is 2018
+CPU plus 1 worker is on 22
+CPU plus 1 worker thread PID number is 2019
+mwait worker is on 46
+mwait worker thread PID number is 2020
+204155874
+194726720
+187736873
+50176812
+187336998
+185486978
+201834272
+190375716
+201064155
+198601551
+193698708
+189092764
+193638719
+195340689
+197875298
+211360173
+200479206
+192575199
+199452206
+197504920
+202014539
+199044169
+232504727
+Main thread's PID number is 2021
+Main thread is on vCPU 23
+CPU plus 1 worker is on 0
+CPU plus 1 worker thread PID number is 2022
+mwait worker is on 24
+mwait worker thread PID number is 2023
+CPU plus 1 worker is on 1
+CPU plus 1 worker thread PID number is 2024
+mwait worker is on 25
+mwait worker thread PID number is 2025
+CPU plus 1 worker is on 2
+CPU plus 1 worker thread PID number is 2026
+mwait worker is on 26
+mwait worker thread PID number is 2027
+CPU plus 1 worker is on 3
+CPU plus 1 worker thread PID number is 2028
+mwait worker is on 27
+mwait worker thread PID number is 2029
+CPU plus 1 worker is on 4
+CPU plus 1 worker thread PID number is 2030
+mwait worker is on 28
+mwait worker thread PID number is 2031
+CPU plus 1 worker is on 5
+CPU plus 1 worker thread PID number is 2032
+mwait worker is on 29
+mwait worker thread PID number is 2033
+CPU plus 1 worker is on 6
+CPU plus 1 worker thread PID number is 2034
+mwait worker is on 30
+mwait worker thread PID number is 2035
+CPU plus 1 worker is on 7
+CPU plus 1 worker thread PID number is 2036
+mwait worker is on 31
+mwait worker thread PID number is 2037
+CPU plus 1 worker is on 8
+CPU plus 1 worker thread PID number is 2038
+mwait worker is on 32
+mwait worker thread PID number is 2039
+CPU plus 1 worker is on 9
+CPU plus 1 worker thread PID number is 2040
+mwait worker is on 33
+mwait worker thread PID number is 2041
+CPU plus 1 worker is on 10
+CPU plus 1 worker thread PID number is 2042
+mwait worker is on 34
+mwait worker thread PID number is 2043
+CPU plus 1 worker is on 11
+CPU plus 1 worker thread PID number is 2044
+mwait worker is on 35
+mwait worker thread PID number is 2045
+CPU plus 1 worker is on 12
+CPU plus 1 worker thread PID number is 2046
+mwait worker is on 36
+mwait worker thread PID number is 2047
+CPU plus 1 worker is on 13
+CPU plus 1 worker thread PID number is 2048
+mwait worker is on 37
+mwait worker thread PID number is 2049
+CPU plus 1 worker is on 14
+CPU plus 1 worker thread PID number is 2050
+mwait worker is on 38
+mwait worker thread PID number is 2051
+CPU plus 1 worker is on 15
+CPU plus 1 worker thread PID number is 2052
+mwait worker is on 39
+mwait worker thread PID number is 2053
+CPU plus 1 worker is on 16
+CPU plus 1 worker thread PID number is 2054
+mwait worker is on 40
+mwait worker thread PID number is 2055
+CPU plus 1 worker is on 17
+CPU plus 1 worker thread PID number is 2056
+mwait worker is on 41
+mwait worker thread PID number is 2057
+CPU plus 1 worker is on 18
+CPU plus 1 worker thread PID number is 2058
+mwait worker is on 42
+mwait worker thread PID number is 2059
+CPU plus 1 worker is on 19
+CPU plus 1 worker thread PID number is 2060
+mwait worker is on 43
+mwait worker thread PID number is 2061
+CPU plus 1 worker is on 20
+CPU plus 1 worker thread PID number is 2062
+mwait worker is on 44
+mwait worker thread PID number is 2063
+CPU plus 1 worker is on 21
+CPU plus 1 worker thread PID number is 2064
+mwait worker is on 45
+mwait worker thread PID number is 2065
+CPU plus 1 worker is on 22
+CPU plus 1 worker thread PID number is 2066
+mwait worker is on 46
+mwait worker thread PID number is 2067
+192485004
+202471637
+174597379
+64351167
+182484836
+184279174
+191630081
+189478572
+198614407
+198341032
+191603785
+190479815
+188129207
+195797522
+198592608
+216384920
+194083881
+197605441
+203160826
+204641432
+200354858
+203929530
+232977706
+Main thread's PID number is 2068
+Main thread is on vCPU 23
+CPU plus 1 worker is on 0
+CPU plus 1 worker thread PID number is 2069
+mwait worker is on 24
+mwait worker thread PID number is 2070
+CPU plus 1 worker is on 1
+CPU plus 1 worker thread PID number is 2071
+mwait worker is on 25
+mwait worker thread PID number is 2072
+CPU plus 1 worker is on 2
+CPU plus 1 worker thread PID number is 2073
+mwait worker is on 26
+mwait worker thread PID number is 2074
+CPU plus 1 worker is on 3
+CPU plus 1 worker thread PID number is 2075
+mwait worker is on 27
+mwait worker thread PID number is 2076
+CPU plus 1 worker is on 4
+CPU plus 1 worker thread PID number is 2077
+mwait worker is on 28
+mwait worker thread PID number is 2078
+CPU plus 1 worker is on 5
+CPU plus 1 worker thread PID number is 2079
+mwait worker is on 29
+mwait worker thread PID number is 2080
+CPU plus 1 worker is on 6
+CPU plus 1 worker thread PID number is 2081
+mwait worker is on 30
+mwait worker thread PID number is 2082
+CPU plus 1 worker is on 7
+CPU plus 1 worker thread PID number is 2083
+mwait worker is on 31
+mwait worker thread PID number is 2084
+CPU plus 1 worker is on 8
+CPU plus 1 worker thread PID number is 2085
+mwait worker is on 32
+mwait worker thread PID number is 2086
+CPU plus 1 worker is on 9
+CPU plus 1 worker thread PID number is 2087
+mwait worker is on 33
+mwait worker thread PID number is 2088
+CPU plus 1 worker is on 10
+CPU plus 1 worker thread PID number is 2089
+mwait worker is on 34
+mwait worker thread PID number is 2090
+CPU plus 1 worker is on 11
+CPU plus 1 worker thread PID number is 2091
+mwait worker is on 35
+mwait worker thread PID number is 2092
+CPU plus 1 worker is on 12
+CPU plus 1 worker thread PID number is 2093
+mwait worker is on 36
+mwait worker thread PID number is 2094
+CPU plus 1 worker is on 13
+CPU plus 1 worker thread PID number is 2095
+mwait worker is on 37
+mwait worker thread PID number is 2096
+CPU plus 1 worker is on 14
+CPU plus 1 worker thread PID number is 2097
+mwait worker is on 38
+mwait worker thread PID number is 2098
+CPU plus 1 worker is on 15
+CPU plus 1 worker thread PID number is 2099
+mwait worker is on 39
+mwait worker thread PID number is 2100
+CPU plus 1 worker is on 16
+CPU plus 1 worker thread PID number is 2101
+mwait worker is on 40
+mwait worker thread PID number is 2102
+CPU plus 1 worker is on 17
+CPU plus 1 worker thread PID number is 2103
+mwait worker is on 41
+mwait worker thread PID number is 2104
+CPU plus 1 worker is on 18
+CPU plus 1 worker thread PID number is 2105
+mwait worker is on 42
+mwait worker thread PID number is 2106
+mwait worker is on 43
+mwait worker thread PID number is 2108
+CPU plus 1 worker is on 19
+CPU plus 1 worker thread PID number is 2107
+CPU plus 1 worker is on 20
+CPU plus 1 worker thread PID number is 2109
+mwait worker is on 44
+mwait worker thread PID number is 2110
+CPU plus 1 worker is on 21
+CPU plus 1 worker thread PID number is 2111
+mwait worker is on 45
+mwait worker thread PID number is 2112
+CPU plus 1 worker is on 22
+CPU plus 1 worker thread PID number is 2113
+mwait worker is on 46
+mwait worker thread PID number is 2114
+197120825
+202943410
+183388872
+28052604
+169654895
+182956158
+193004652
+193097680
+194883111
+198829681
+187109045
+199465170
+191225164
+199903235
+188384481
+214071173
+191028189
+194485451
+200959098
+202281661
+201400485
+204272021
+221747119
+Main thread's PID number is 2115
+Main thread is on vCPU 23
+CPU plus 1 worker is on 0
+CPU plus 1 worker thread PID number is 2116
+mwait worker is on 24
+mwait worker thread PID number is 2117
+CPU plus 1 worker is on 1
+CPU plus 1 worker thread PID number is 2118
+mwait worker is on 25
+mwait worker thread PID number is 2119
+CPU plus 1 worker is on 2
+CPU plus 1 worker thread PID number is 2120
+mwait worker is on 26
+mwait worker thread PID number is 2121
+CPU plus 1 worker is on 3
+CPU plus 1 worker thread PID number is 2122
+mwait worker is on 27
+mwait worker thread PID number is 2123
+CPU plus 1 worker is on 4
+CPU plus 1 worker thread PID number is 2124
+mwait worker is on 28
+mwait worker thread PID number is 2125
+CPU plus 1 worker is on 5
+CPU plus 1 worker thread PID number is 2126
+mwait worker is on 29
+mwait worker thread PID number is 2127
+CPU plus 1 worker is on 6
+CPU plus 1 worker thread PID number is 2128
+mwait worker is on 30
+mwait worker thread PID number is 2129
+CPU plus 1 worker is on 7
+CPU plus 1 worker thread PID number is 2130
+mwait worker is on 31
+mwait worker thread PID number is 2131
+CPU plus 1 worker is on 8
+CPU plus 1 worker thread PID number is 2132
+mwait worker is on 32
+mwait worker thread PID number is 2133
+mwait worker is on 33
+mwait worker thread PID number is 2138
+CPU plus 1 worker is on 9
+CPU plus 1 worker thread PID number is 2137
+CPU plus 1 worker is on 10
+CPU plus 1 worker thread PID number is 2139
+mwait worker is on 34
+mwait worker thread PID number is 2140
+CPU plus 1 worker is on 11
+CPU plus 1 worker thread PID number is 2141
+mwait worker is on 35
+mwait worker thread PID number is 2142
+CPU plus 1 worker is on 12
+CPU plus 1 worker thread PID number is 2143
+mwait worker is on 36
+mwait worker thread PID number is 2144
+CPU plus 1 worker is on 13
+CPU plus 1 worker thread PID number is 2145
+mwait worker is on 37
+mwait worker thread PID number is 2146
+CPU plus 1 worker is on 14
+CPU plus 1 worker thread PID number is 2147
+mwait worker is on 38
+mwait worker thread PID number is 2148
+CPU plus 1 worker is on 15
+CPU plus 1 worker thread PID number is 2149
+mwait worker is on 39
+mwait worker thread PID number is 2150
+CPU plus 1 worker is on 16
+CPU plus 1 worker thread PID number is 2151
+mwait worker is on 40
+mwait worker thread PID number is 2152
+CPU plus 1 worker is on 17
+CPU plus 1 worker thread PID number is 2153
+mwait worker is on 41
+mwait worker thread PID number is 2154
+CPU plus 1 worker is on 18
+CPU plus 1 worker thread PID number is 2156
+mwait worker is on 42
+mwait worker thread PID number is 2157
+CPU plus 1 worker is on 19
+CPU plus 1 worker thread PID number is 2158
+mwait worker is on 43
+mwait worker thread PID number is 2159
+CPU plus 1 worker is on 20
+CPU plus 1 worker thread PID number is 2160
+mwait worker is on 44
+mwait worker thread PID number is 2161
+CPU plus 1 worker is on 21
+CPU plus 1 worker thread PID number is 2162
+mwait worker is on 45
+mwait worker thread PID number is 2163
+CPU plus 1 worker is on 22
+CPU plus 1 worker thread PID number is 2164
+mwait worker is on 46
+mwait worker thread PID number is 2165
+196215851
+203543929
+188540536
+68113417
+186870146
+187025235
+186480267
+187971975
+190560228
+198664809
+193992065
+190901694
+190634011
+199415074
+190065715
+210732943
+188390923
+191662076
+204640158
+202864437
+200421104
+202415589
+217453080
+Main thread's PID number is 2166
+Main thread is on vCPU 23
+CPU plus 1 worker is on 0
+CPU plus 1 worker thread PID number is 2167
+mwait worker is on 24
+mwait worker thread PID number is 2168
+CPU plus 1 worker is on 1
+CPU plus 1 worker thread PID number is 2169
+mwait worker is on 25
+mwait worker thread PID number is 2170
+CPU plus 1 worker is on 2
+CPU plus 1 worker thread PID number is 2171
+mwait worker is on 26
+mwait worker thread PID number is 2172
+CPU plus 1 worker is on 3
+CPU plus 1 worker thread PID number is 2173
+mwait worker is on 27
+mwait worker thread PID number is 2174
+CPU plus 1 worker is on 4
+CPU plus 1 worker thread PID number is 2175
+mwait worker is on 28
+mwait worker thread PID number is 2176
+CPU plus 1 worker is on 5
+CPU plus 1 worker thread PID number is 2177
+mwait worker is on 29
+mwait worker thread PID number is 2178
+CPU plus 1 worker is on 6
+CPU plus 1 worker thread PID number is 2179
+mwait worker is on 30
+mwait worker thread PID number is 2180
+CPU plus 1 worker is on 7
+CPU plus 1 worker thread PID number is 2181
+mwait worker is on 31
+mwait worker thread PID number is 2182
+CPU plus 1 worker is on 8
+CPU plus 1 worker thread PID number is 2183
+mwait worker is on 32
+mwait worker thread PID number is 2184
+CPU plus 1 worker is on 9
+CPU plus 1 worker thread PID number is 2185
+mwait worker is on 33
+mwait worker thread PID number is 2186
+CPU plus 1 worker is on 10
+CPU plus 1 worker thread PID number is 2187
+mwait worker is on 34
+mwait worker thread PID number is 2188
+CPU plus 1 worker is on 11
+CPU plus 1 worker thread PID number is 2189
+mwait worker is on 35
+mwait worker thread PID number is 2190
+CPU plus 1 worker is on 12
+CPU plus 1 worker thread PID number is 2191
+mwait worker is on 36
+mwait worker thread PID number is 2192
+CPU plus 1 worker is on 13
+CPU plus 1 worker thread PID number is 2193
+mwait worker is on 37
+mwait worker thread PID number is 2194
+CPU plus 1 worker is on 14
+CPU plus 1 worker thread PID number is 2195
+mwait worker is on 38
+mwait worker thread PID number is 2196
+CPU plus 1 worker is on 15
+CPU plus 1 worker thread PID number is 2197
+mwait worker is on 39
+mwait worker thread PID number is 2198
+CPU plus 1 worker is on 16
+CPU plus 1 worker thread PID number is 2199
+mwait worker is on 40
+mwait worker thread PID number is 2200
+CPU plus 1 worker is on 17
+CPU plus 1 worker thread PID number is 2201
+mwait worker is on 41
+mwait worker thread PID number is 2202
+CPU plus 1 worker is on 18
+CPU plus 1 worker thread PID number is 2203
+mwait worker is on 42
+mwait worker thread PID number is 2204
+CPU plus 1 worker is on 19
+CPU plus 1 worker thread PID number is 2205
+mwait worker is on 43
+mwait worker thread PID number is 2206
+CPU plus 1 worker is on 20
+CPU plus 1 worker thread PID number is 2207
+mwait worker is on 44
+mwait worker thread PID number is 2208
+CPU plus 1 worker is on 21
+CPU plus 1 worker thread PID number is 2209
+mwait worker is on 45
+mwait worker thread PID number is 2210
+CPU plus 1 worker is on 22
+CPU plus 1 worker thread PID number is 2211
+mwait worker is on 46
+mwait worker thread PID number is 2212
+202230941
+194488231
+183727115
+49060588
+187816058
+178440977
+198904084
+184765004
+200266617
+193281906
+191227120
+194759083
+193618699
+196784953
+190741248
+204867714
+190447585
+187454229
+198755369
+193290623
+202184719
+194572923
+227361374

@@ -1,0 +1,2 @@
+/root/knop/nop.o
+

@@ -1,0 +1,13 @@
+#!bin/bash
+
+cd HiBench/bin
+
+# During testing, it's fine to carry out by using following commands,
+# but it was recommended by building individually
+./build_all.sh
+
+# However, its fine to use this to run all the benchmarks
+./run_all.sh
+
+echo "Please find reports in HiBench/report/*"
+

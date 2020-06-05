@@ -1,0 +1,28 @@
+#!/bin/bash
+
+SCRIPT_DIR=$PWD
+
+cd HiBench/bin
+
+# During testing, it's fine to carry out by using following commands,
+# but it was recommended by building individually
+
+# Now I set all enviroments appropriately, in case u need other benchmarks
+# so I use build all
+#./build_all.sh
+
+# To save time for your test, I just cp all files
+# Set Hadoop
+cp $SCRIPT_DIR/src/hadoop.conf $SCRIPT_DIR/HiBench/conf/hadoop.conf
+# Select framework
+cp $SCRIPT_DIR/src/frameworks.lst $SCRIPT_DIR/HiBench/conf/frameworks.lst
+# Select benchmark
+cp $SCRIPT_DIR/src/benchmarks.lst $SCRIPT_DIR/HiBench/conf/benchmarks.lst
+# Set concurrency
+cp $SCRIPT_DIR/src/hibench.conf $SCRIPT_DIR/HiBench/conf/hibench.conf
+
+# However, its fine to use this to run all selected benchmarks
+./run_all.sh
+
+echo "Please find reports in HiBench/report/*"
+

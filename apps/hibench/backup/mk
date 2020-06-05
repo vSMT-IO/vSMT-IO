@@ -1,0 +1,18 @@
+#!bin/bash
+
+# Build dependencies
+sudo apt-get install openjdk-7-jre openjdk-7-jdk
+sudo apt-get install maven
+sudo apt-get install spark
+
+# For generating reports
+sudo apt-get install bc
+
+# Particularly, I consider the standalone mode so I didn't added hadoop
+# installing and configuring procedure.
+
+# Install HiBench
+git clone https://github.com/intel-hadoop/HiBench.git
+
+# Prompt for users
+echo "Please set the appropriate values in HiBench/conf/*.conf, as u need"

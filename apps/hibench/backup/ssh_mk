@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Download ssh-server
+sudo apt-get install openssh-server
+
+# Start ssh
+sudo /etc/init.d/ssh start
+
+echo ""
+echo ""
+echo "******************************"
+echo "Please check ssh's existence,"
+echo "if not, please abort and check"
+echo "******************************"
+echo ""
+
+# Check ssh
+ps -ef|grep ssh
+
+sleep 5
+
+echo ""
+echo ""
+echo "***********************************************"
+echo "Once confirmed, please click enter all the time"
+echo "because here nothing needs to be done mannually"
+echo "***********************************************"
+echo ""
+echo ""
+
+# Generate RSA
+ssh-keygen -t rsa
+
+# Import authorized keys
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+echo ""
+echo ""
+echo "**************************************************************"
+echo "Now testing if it could be done to ssh localhost withou passwd"
+echo "**************************************************************"
+echo "        Please input 'yes' instead of clicking 'enter'"
+echo ""
+echo ""
+
+ssh localhost
+
+# close firewall
+ufw disable

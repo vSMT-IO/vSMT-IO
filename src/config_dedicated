@@ -1,0 +1,7 @@
+#vPair configure file with ini format: https://gist.github.com/zdxerr/709169
+[xPair]
+vm_num=2
+vm1=kvm1
+vm1_vcpu_num=23
+vm2=kvm8
+vm2_vcpu_num=23

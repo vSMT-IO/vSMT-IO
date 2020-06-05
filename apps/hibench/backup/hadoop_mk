@@ -1,0 +1,50 @@
+#!/bin/bash
+
+SCRIPT_DIR=$PWD
+
+# Download Hadoop
+rm -rf hadoop-2.6.5.tar.gz
+
+wget http://apache.01link.hk/hadoop/common/hadoop-2.6.5/hadoop-2.6.5.tar.gz 
+
+sudo tar zxvf hadoop-2.6.5.tar.gz -C /usr/local
+
+# Start to configure hadoop
+cd /usr/local
+sudo mv -f hadoop-2.6.5/ hadoop/
+sudo chmod 777 /usr/local/hadoop
+
+sed -i '$aexport JAVA_HOME=/usr/java/jdk1.8.0_181' ~/.bashrc 
+sed -i '$aexport HADOOP_INSTALL=/usr/local/hadoop' ~/.bashrc
+sed -i '$aexport PATH=$PATH:$HADOOP_INSTALL/bin' ~/.bashrc
+sed -i '$aexport PATH=$PATH:$HADOOP_INSTALL/sbin' ~/.bashrc
+sed -i '$aexport HADOOP_MAPRED_HOME=$HADOOP_INSTALL' ~/.bashrc 
+sed -i '$aexport HADOOP_COMMON_HOME=$HADOOP_INSTALL' ~/.bashrc
+sed -i '$aexport HADOOP_HDFS_HOME=$HADOOP_INSTALL' ~/.bashrc
+sed -i '$aexport YARN_HOME=$HADOOP_INSTALL' ~/.bashrc
+sed -i '$aexport HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_INSTALL/lib/native' ~/.bashrc
+sed -i '$aexport HADOOP_OPTS="-Djava.library.path=$HADOOP_INSTALL/lib:$HADOOP_COMMON_LIB_NATIVE_DIR"' ~/.bashrc
+
+sed -i '$aexport JAVA_HOME=/usr/java/jdk1.8.0_181' /usr/local/hadoop/etc/hadoop/hadoop-env.sh 
+sed -i '$aexport HADOOP=/usr/local/hadoop' /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+sed -i '$aexport PATH=$PATH:/usr/local/hadoop/bin' /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+
+cp $SCRIPT_DIR/src/yarn-env.sh /usr/local/hadoop/etc/hadoop/yarn-env.sh
+
+sudo mkdir /usr/local/hadoop_tmp
+cp $SCRIPT_DIR/src/core-site.xml /usr/local/hadoop/etc/hadoop/core-site.xml
+cp $SCRIPT_DIR/src/hdfs-site.xml /usr/local/hadoop/etc/hadoop/hdfs-site.xml
+cp $SCRIPT_DIR/src/yarn-site.xml /usr/local/hadoop/etc/hadoop/yarn-site.xml
+
+source ~/.bashrc
+
+echo ""
+echo ""
+echo " System shall be rebooted and it would do after 'sleep 2'"
+echo ""
+echo ""
+echo ""
+
+sleep 2
+
+reboot

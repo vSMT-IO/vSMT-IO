@@ -1,0 +1,5 @@
+1, You can install dbt1 and postgressql by running "build.sh".
+2, Then, you need to run "RunThisFirst.sh" and  "RunThisNext.sh" in separate containers (separate terminal session).
+3, You need to run  "RunThisFirst.sh" and then run  "RunThisNext.sh". The output can be found at "~/finaloutput/BT".
+
+NOTE: when executing build. It has two parameters. It is build <number of items> amd <number of customers>. The default value is 1000 and 100.

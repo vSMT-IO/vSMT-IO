@@ -1,0 +1,28 @@
+Evaluation applications for vSMT-IO research project, including benchmark suits and real applications.
+
+Real Applications
+1, SSDB
+2, Spark
+3, MediaTomb
+4, WaterMark
+5, PgSQL
+6, Nginx
+7, DBT1 (TPC-W)
+8, Apache
+9, HDFS
+10, Hadoop
+11, MongoDB
+12, FTP Server
+13, ClamAV
+14, XGBoost
+15, PbZip2
+16, FileServer
+...
+
+Benchmark Suits
+1, Parsec
+2, Splash-2X
+3, Phoenix
+4, ImageMagick
+5, ebizzy, hackbench, kernbench
+...

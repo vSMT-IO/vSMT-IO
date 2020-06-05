@@ -1,0 +1,8 @@
+java_mk
+ssh_mk
+hadoop_mk
+test_hadoop
+bench_mk
+bench_run
+
+Note: if u wish to run these two separately, u could change src/benchmark.lst so      it would be separated or combined, which depends on your need.

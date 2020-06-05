@@ -1,0 +1,766 @@
+diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
+index 3b2490b..fece36a 100644
+--- a/arch/x86/entry/common.c
++++ b/arch/x86/entry/common.c
+@@ -32,9 +32,27 @@
+ #include <linux/uaccess.h>
+ #include <asm/cpufeature.h>
+ 
++#include <asm/msr.h>
++#include <asm/current.h>
++
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/syscalls.h>
+ 
++DECLARE_PER_CPU(unsigned long*, shim_signal);
++#define KERNEL_SYSCALL_TYPE (11)
++struct shim_syscall_signal
++{
++    unsigned long timestamp;
++    int type;
++    int size;
++    int tid;
++    int gid;
++    int call;
++    unsigned long latency;
++};
++
++
++
+ #ifdef CONFIG_CONTEXT_TRACKING
+ /* Called on entry from user mode with IRQs off. */
+ __visible inline void enter_from_user_mode(void)
+@@ -272,6 +290,8 @@ __visible inline void syscall_return_slowpath(struct pt_regs *regs)
+ __visible void do_syscall_64(unsigned long nr, struct pt_regs *regs)
+ {
+ 	struct thread_info *ti;
++	u64 start,end;
++	struct shim_syscall_signal *s;
+ 
+ 	enter_from_user_mode();
+ 	local_irq_enable();
+@@ -287,7 +307,22 @@ __visible void do_syscall_64(unsigned long nr, struct pt_regs *regs)
+ 	nr &= __SYSCALL_MASK;
+ 	if (likely(nr < NR_syscalls)) {
+ 		nr = array_index_nospec(nr, NR_syscalls);
++		start = rdtsc();
+ 		regs->ax = sys_call_table[nr](regs);
++		end = rdtsc();
++		s = (struct shim_syscall_signal *) (__this_cpu_read(shim_signal));
++		if (s)
++		{
++		    s = (struct shim_syscall_signal *)((char *)s + 100);
++		    s->type = KERNEL_SYSCALL_TYPE;
++		    s->call = nr;
++		    s->size = sizeof(struct shim_syscall_signal);
++		    s->tid = (int)task_pid_nr(current);
++		    s->gid = (int)task_tgid_nr(current);
++		    s->latency = end - start;
++		    s->timestamp = end;
++		}
++		
+ 	}
+ 
+ 	syscall_return_slowpath(regs);
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index 12bb445..5a4c7b9 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -60,6 +60,8 @@
+ #endif
+ 
+ __visible DEFINE_PER_CPU(unsigned long, rsp_scratch);
++//__visible DEFINE_PER_CPU(int, shim_curr_syscall);
++//EXPORT_PER_CPU_SYMBOL(shim_curr_syscall);
+ 
+ /* Prints also some state that isn't saved in the pt_regs */
+ void __show_regs(struct pt_regs *regs, int all)
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index 2aafa6a..861b2d5 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -25,6 +25,9 @@
+ #include <asm/vm86.h>			/* struct vm86			*/
+ #include <asm/mmu_context.h>		/* vma_pkey()			*/
+ 
++#include <asm/msr.h>
++#include <asm/current.h>
++
+ #define CREATE_TRACE_POINTS
+ #include <asm/trace/exceptions.h>
+ 
+@@ -1451,6 +1454,18 @@ trace_page_fault_entries(unsigned long address, struct pt_regs *regs,
+ 		trace_page_fault_kernel(address, regs, error_code);
+ }
+ 
++DECLARE_PER_CPU(unsigned long*, shim_signal);
++#define KERNEL_PAGEFAULT_TYPE (12)
++struct shim_pagefault_signal
++{
++    unsigned long timestamp;
++    int type;
++    int size;
++    int tid;
++    int gid;
++    unsigned long latency;
++};
++
+ /*
+  * We must have this function blacklisted from kprobes, tagged with notrace
+  * and call read_cr2() before calling anything else. To avoid calling any
+@@ -1463,12 +1478,28 @@ do_page_fault(struct pt_regs *regs, unsigned long error_code)
+ {
+ 	unsigned long address = read_cr2(); /* Get the faulting address */
+ 	enum ctx_state prev_state;
++	u64 start, end;
++	struct shim_pagefault_signal *s;
++	
+ 
+ 	prev_state = exception_enter();
+ 	if (trace_pagefault_enabled())
+ 		trace_page_fault_entries(address, regs, error_code);
+-
++	start = rdtsc();
+ 	__do_page_fault(regs, error_code, address);
++	end = rdtsc();
++	s = (struct shim_pagefault_signal *) __this_cpu_read(shim_signal);
++	if (s)
++	{
++	    // 100 bytes offset
++	    s = (struct shim_pagefault_signal *)((char *)s + 100);
++	    s->type = KERNEL_PAGEFAULT_TYPE;
++	    s->size = sizeof(struct shim_pagefault_signal);
++	    s->tid = (int)task_pid_nr(current);
++	    s->gid = (int)task_tgid_nr(current);
++	    s->latency = end - start;
++	    s->timestamp = end;
++	}
+ 	exception_exit(prev_state);
+ }
+ NOKPROBE_SYMBOL(do_page_fault);
+diff --git a/arch/x86/mm/init.c b/arch/x86/mm/init.c
+index cee58a9..c449534 100644
+--- a/arch/x86/mm/init.c
++++ b/arch/x86/mm/init.c
+@@ -716,7 +716,7 @@ int devmem_is_allowed(unsigned long pagenr)
+ 		if (pagenr < 256)
+ 			return 2;
+ 
+-		return 0;
++		return 1;
+ 	}
+ 
+ 	/*
+@@ -728,7 +728,7 @@ int devmem_is_allowed(unsigned long pagenr)
+ 		if (pagenr < 256)
+ 			return 1;
+ 
+-		return 0;
++		return 1;
+ 	}
+ 
+ 	return 1;
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 43731fe..a045e29 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -623,6 +623,9 @@ struct task_struct {
+ 	unsigned int			wakee_flips;
+ 	unsigned long			wakee_flip_decay_ts;
+ 	struct task_struct		*last_wakee;
++    u64 wakee_stamp;
++    int wakee_tid;
++    int wakee_gid;
+ 
+ 	/*
+ 	 * recent_used_cpu is initially set as the last CPU used by a task
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index fe365c9..5053a26 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -14,6 +14,8 @@
+ #include <asm/switch_to.h>
+ #include <asm/tlb.h>
+ 
++#include <asm/msr.h>
++
+ #include "../workqueue_internal.h"
+ #include "../smpboot.h"
+ 
+@@ -1954,6 +1956,37 @@ static void ttwu_queue(struct task_struct *p, int cpu, int wake_flags)
+  *
+  */
+ 
++DEFINE_PER_CPU(unsigned long *, shim_signal);
++
++#define KERNEL_SCHEDULE_SIGNAL (1)
++#define KERNEL_WAKEUP_SIGNAL (3)
++
++struct shim_wakeup_signal
++{
++    unsigned long timestamp;
++    int type;
++    int size;
++    int to_tid;
++    int to_tgid;
++    int from_tid;
++    int from_tgid;
++};
++
++struct shim_schedule_signal
++{
++    unsigned long timestamp;
++    int type;
++    int size;
++    int to_tid;
++    int to_tgid;
++    int to_wakee_tid;
++    int to_wakee_tgid;
++    u64 to_wakee_stamp;
++    int from_tid;
++    int from_tgid;    
++};
++EXPORT_PER_CPU_SYMBOL(shim_signal);
++
+ /**
+  * try_to_wake_up - wake up a thread
+  * @p: the thread to be awakened
+@@ -1975,6 +2008,7 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
+ {
+ 	unsigned long flags;
+ 	int cpu, success = 0;
++	u64 stamp;
+ 
+ 	/*
+ 	 * If we are going to wake up a thread waiting for CONDITION we
+@@ -1987,6 +2021,21 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
+ 	if (!(p->state & state))
+ 		goto out;
+ 
++	struct shim_wakeup_signal * t =(struct shim_wakeup_signal *) __this_cpu_read(shim_signal);
++	if (t != NULL)
++	{
++	    stamp = rdtsc();
++	    t->type = KERNEL_WAKEUP_SIGNAL;
++	    t->size = sizeof(struct shim_wakeup_signal);
++	    t->to_tid = (int)task_pid_nr(p);
++	    t->to_tgid = (int)task_tgid_nr(p);
++	    t->from_tid = (int)task_pid_nr(current);
++	    p->wakee_tid = t->from_tid;
++	    t->from_tgid = (int)task_tgid_nr(current);
++	    p->wakee_gid = t->from_tgid;
++	    p->wakee_stamp = stamp;
++	    t->timestamp = stamp;
++	}
+ 	trace_sched_waking(p);
+ 
+ 	/* We're going to change ->state: */
+@@ -2994,9 +3043,20 @@ void sched_exec(void)
+ 
+ DEFINE_PER_CPU(struct kernel_stat, kstat);
+ DEFINE_PER_CPU(struct kernel_cpustat, kernel_cpustat);
++DEFINE_PER_CPU(unsigned int, shim_curr_flag);
++DEFINE_PER_CPU(unsigned long, shim_curr_task);
++DEFINE_PER_CPU(unsigned long, shim_sleep_flag);
++DEFINE_PER_CPU(unsigned long *, shim_wakeup_ptr);
+ 
+ EXPORT_PER_CPU_SYMBOL(kstat);
+ EXPORT_PER_CPU_SYMBOL(kernel_cpustat);
++EXPORT_PER_CPU_SYMBOL(shim_curr_flag);
++EXPORT_PER_CPU_SYMBOL(shim_curr_task);
++EXPORT_PER_CPU_SYMBOL(shim_sleep_flag);
++EXPORT_PER_CPU_SYMBOL(shim_wakeup_ptr);
++
++
++
+ 
+ /*
+  * The function fair_sched_class.update_curr accesses the struct curr
+@@ -3494,6 +3554,31 @@ static void __sched notrace __schedule(bool preempt)
+ 		 *   is a RELEASE barrier),
+ 		 */
+ 		++*switch_count;
++		struct shim_schedule_signal * t =(struct shim_schedule_signal *) __this_cpu_read(shim_signal);
++		if (t != NULL)
++		{
++		    t->type = KERNEL_SCHEDULE_SIGNAL;
++		    t->size = sizeof(struct shim_schedule_signal);
++		    t->to_tid = (int)task_pid_nr(next);
++		    t->to_tgid = (int)task_tgid_nr(next);
++		    t->to_wakee_tid = next->wakee_tid;
++		    t->to_wakee_tgid = next->wakee_gid;
++		    t->to_wakee_stamp = next->wakee_stamp;
++		    t->from_tid = (int)task_pid_nr(prev);		    
++		    t->from_tgid = (int)task_tgid_nr(prev);
++		    t->timestamp = rdtsc();
++		}
++		__this_cpu_write(shim_curr_task, (unsigned long)task_pid_nr(next) | ((unsigned long)task_tgid_nr(next)<<32));
++
++		if (next->policy == SCHED_IDLE || task_tgid_nr(next) == 0) {
++		  __this_cpu_write(shim_curr_flag, 1);
++		  //wakeup the paired CPU
++		  unsigned long * shim_target_flag = __this_cpu_read(shim_wakeup_ptr);
++		  if (shim_target_flag)
++		    *shim_target_flag  = 0xdead;
++		} else {
++		  __this_cpu_write(shim_curr_flag, 0);
++		}
+ 
+ 		trace_sched_switch(preempt, prev, next);
+ 
+@@ -3806,7 +3891,10 @@ void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task)
+ 		goto out_unlock;
+ 
+ 	/*
+-	 * Idle task boosting is a nono in general. There is one
++shell
++cd cus
++grep -r 'global-set-key' .
++	 * Idle task boo(meta g)ng is a nono in M-g There is one
+ 	 * exception, when PREEMPT_RT and NOHZ is active:
+ 	 *
+ 	 * The idle task calls get_next_timer_interrupt() and holds
+diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
+index 1a3e9bd..e92d0e1 100644
+--- a/kernel/sched/idle.c
++++ b/kernel/sched/idle.c
+@@ -345,8 +345,15 @@ void play_idle(unsigned long duration_ms)
+ }
+ EXPORT_SYMBOL_GPL(play_idle);
+ 
++DECLARE_PER_CPU(unsigned long, shim_sleep_flag);
++DECLARE_PER_CPU(unsigned long*, shim_wakeup_ptr);
++DECLARE_PER_CPU(unsigned long*, shim_signal);
++
+ void cpu_startup_entry(enum cpuhp_state state)
+ {
++	int my_cpu,target_cpu,nr_cpu;
++	unsigned long *shim_target_wait;
++	unsigned long *shimpage;
+ 	/*
+ 	 * This #ifdef needs to die, but it's too late in the cycle to
+ 	 * make this generic (ARM and SH have never invoked the canary
+@@ -362,6 +369,22 @@ void cpu_startup_entry(enum cpuhp_state state)
+ 	 */
+ 	boot_init_stack_canary();
+ #endif
++	my_cpu = smp_processor_id();
++	nr_cpu = num_possible_cpus();
++	if (my_cpu < nr_cpu/2)
++		target_cpu = my_cpu + nr_cpu/2;
++	else
++		target_cpu = my_cpu - nr_cpu/2;
++
++	shim_target_wait = per_cpu_ptr(&shim_sleep_flag, target_cpu);
++	__this_cpu_write(shim_wakeup_ptr, shim_target_wait);
++	printk(KERN_DEBUG "SHIM:idle starts on cpu %d, neighbour cpu %d, waits on %p, neighbour on %p\n", my_cpu, target_cpu, &shim_wakeup_ptr, shim_target_wait);
++
++	// allocate one page for the shim_signal;
++	shimpage = (unsigned long*)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 0);
++	__this_cpu_write(shim_signal, shimpage);
++	printk(KERN_DEBUG "SHIM:starts on cpu %d, signal buffer on %p\n", my_cpu, shimpage);
++
+ 	arch_cpu_idle_prepare();
+ 	cpuhp_online_idle(state);
+ 	while (1)
+diff --git a/kernel/softirq.c b/kernel/softirq.c
+index 6f58486..82ebf7b 100644
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -26,6 +26,9 @@
+ #include <linux/smpboot.h>
+ #include <linux/tick.h>
+ #include <linux/irq.h>
++//#include <linux/sched/clock.h>
++#include <asm/msr.h>
++#include <asm/current.h>
+ 
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/irq.h>
+@@ -53,6 +56,22 @@ DEFINE_PER_CPU_ALIGNED(irq_cpustat_t, irq_stat);
+ EXPORT_PER_CPU_SYMBOL(irq_stat);
+ #endif
+ 
++DECLARE_PER_CPU(unsigned long*, shim_signal);
++
++#define KERNEL_SOFTIRQ_SIGNAL (2)
++
++struct shim_softirq_signal
++{
++    unsigned long timestamp;
++    int type;
++    int size;
++    int vector;
++    int tid;
++    int tgid;
++    unsigned long latency;    
++};
++
++
+ static struct softirq_action softirq_vec[NR_SOFTIRQS] __cacheline_aligned_in_smp;
+ 
+ DEFINE_PER_CPU(struct task_struct *, ksoftirqd);
+@@ -280,6 +299,9 @@ asmlinkage __visible void __softirq_entry __do_softirq(void)
+ 	while ((softirq_bit = ffs(pending))) {
+ 		unsigned int vec_nr;
+ 		int prev_count;
++		unsigned long startAction;
++		unsigned long endAction;
++		struct shim_softirq_signal * s ;
+ 
+ 		h += softirq_bit - 1;
+ 
+@@ -289,7 +311,24 @@ asmlinkage __visible void __softirq_entry __do_softirq(void)
+ 		kstat_incr_softirqs_this_cpu(vec_nr);
+ 
+ 		trace_softirq_entry(vec_nr);
++
++		startAction = rdtsc();
+ 		h->action(h);
++		endAction = rdtsc();	       
++		s =(struct shim_softirq_signal *) __this_cpu_read(shim_signal);
++		if (s != NULL)
++		{
++		    // fill the shim_softirq_signal
++		    s->type = KERNEL_SOFTIRQ_SIGNAL;
++		    s->size = sizeof(struct shim_softirq_signal);
++		    s->vector = vec_nr;
++		    s->latency = endAction - startAction;
++		    s->tid = (int)task_pid_nr(current);
++		    s->tgid = (int)task_tgid_nr(current);
++		    s->timestamp = endAction;
++		}
++		
++		
+ 		trace_softirq_exit(vec_nr);
+ 		if (unlikely(prev_count != preempt_count())) {
+ 			pr_err("huh, entered softirq %u %s %p with preempt_count %08x, exited with %08x?\n",
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 559a912..d279d9d 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -146,6 +146,7 @@
+ #include <linux/sctp.h>
+ #include <net/udp_tunnel.h>
+ #include <linux/net_namespace.h>
++#include <asm/msr.h>
+ 
+ #include "net-sysfs.h"
+ 
+@@ -166,6 +167,8 @@ static int call_netdevice_notifiers_info(unsigned long val,
+ 					 struct netdev_notifier_info *info);
+ static struct napi_struct *napi_by_id(unsigned int napi_id);
+ 
++
++
+ /*
+  * The @dev_base_head list is protected by @dev_base_lock and the rtnl
+  * semaphore.
+@@ -4261,7 +4264,7 @@ EXPORT_SYMBOL(netif_rx_ni);
+ 
+ static __latent_entropy void net_tx_action(struct softirq_action *h)
+ {
+-	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
++    struct softnet_data *sd = this_cpu_ptr(&softnet_data);
+ 
+ 	if (sd->completion_queue) {
+ 		struct sk_buff *clist;
+@@ -5813,6 +5816,7 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
+ 
+ static __latent_entropy void net_rx_action(struct softirq_action *h)
+ {
++//        unsigned long startAction = rdtsc();
+ 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
+ 	unsigned long time_limit = jiffies +
+ 		usecs_to_jiffies(netdev_budget_usecs);
+@@ -5858,6 +5862,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
+ 	net_rps_action_and_irq_enable(sd);
+ out:
+ 	__kfree_skb_flush();
++//	unsigned long endAction = rdtsc();
+ }
+ 
+ struct netdev_adjacent {
+diff --git a/net/core/sock.c b/net/core/sock.c
+index bc2d7a3..c851ec3 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -142,9 +142,28 @@
+ #include <net/tcp.h>
+ #include <net/busy_poll.h>
+ 
++
++#include <asm/msr.h>
++#include <asm/current.h>
++
+ static DEFINE_MUTEX(proto_list_mutex);
+ static LIST_HEAD(proto_list);
+ 
++
++#define SHIM_SOCK_SIGNAL_TYPE (8)
++DECLARE_PER_CPU(unsigned long*, shim_signal);
++struct shim_sock_signal
++{
++    unsigned long timestamp;
++    int type;
++    int size;
++    int tid;
++    int tgid;
++    u64 sockptr;
++    int sockbufsize;
++    int datasize;
++};
++
+ static void sock_inuse_add(struct net *net, int val);
+ 
+ /**
+@@ -447,6 +466,19 @@ int __sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ {
+ 	unsigned long flags;
+ 	struct sk_buff_head *list = &sk->sk_receive_queue;
++       	/* struct shim_sock_signal *s =(struct shim_sock_signal *) __this_cpu_read(shim_signal); */
++	/* if (s != NULL) */
++	/* { */
++	/*     // fill the shim_softirq_signal */
++	/*     s->type = SHIM_SOCK_SIGNAL_TYPE; */
++	/*     s->size = sizeof(struct shim_sock_signal); */
++	/*     s->sockptr = (u64)sk; */
++	/*     s->sockbufsize = sk->sk_backlog.len + atomic_read(&sk->sk_rmem_alloc); */
++	/*     s->datasize = skb->len; */
++	/*     s->tid = (int)task_pid_nr(current); */
++	/*     s->tgid = (int)task_tgid_nr(current); */
++	/*     s->timestamp = rdtsc(); */
++	/* } */
+ 
+ 	if (atomic_read(&sk->sk_rmem_alloc) >= sk->sk_rcvbuf) {
+ 		atomic_inc(&sk->sk_drops);
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index f9dcb29..d561ae2 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -79,8 +79,25 @@
+ #include <trace/events/tcp.h>
+ #include <linux/static_key.h>
+ 
+-int sysctl_tcp_max_orphans __read_mostly = NR_FILE;
+ 
++#include <asm/msr.h>
++#include <asm/current.h>
++
++#define SHIM_TCP_RECV_TYPE (10)
++DECLARE_PER_CPU(unsigned long*, shim_signal);
++struct shim_tcp_recv_signal
++{
++    unsigned long timestamp;
++    int type;
++    int size;
++    int tid;
++    int tgid;
++    u64 sockptr;
++    u64 skuptr;
++    int reason;
++};
++
++int sysctl_tcp_max_orphans __read_mostly = NR_FILE;
+ #define FLAG_DATA		0x01 /* Incoming frame contained data.		*/
+ #define FLAG_WIN_UPDATE		0x02 /* Incoming ACK was a window update.	*/
+ #define FLAG_DATA_ACKED		0x04 /* This ACK acknowledged new data.		*/
+@@ -682,6 +699,19 @@ void tcp_rcv_space_adjust(struct sock *sk)
+  */
+ static void tcp_event_data_recv(struct sock *sk, struct sk_buff *skb)
+ {
++    struct shim_tcp_recv_signal *s;
++    s =(struct shim_tcp_recv_signal *) __this_cpu_read(shim_signal);
++    if ( s!= NULL)
++    {
++	s->type = SHIM_TCP_RECV_TYPE;
++	s->size = sizeof(struct shim_tcp_recv_signal);
++	s->sockptr = (u64)sk;
++	s->skuptr = (u64)skb;
++	s->tid = (int)task_pid_nr(current);
++	s->tgid = (int)task_tgid_nr(current);
++	s->reason = 0;
++	s->timestamp = rdtsc();
++    }
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	u32 now;
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index c4172c1..a64ebe3 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -45,6 +45,23 @@
+ 
+ #include <trace/events/tcp.h>
+ 
++#include <asm/msr.h>
++#include <asm/current.h>
++
++#define SHIM_TCP_XMIT_TYPE (9)
++DECLARE_PER_CPU(unsigned long*, shim_signal);
++struct shim_tcp_xmit_signal
++{
++    unsigned long timestamp;
++    int type;
++    int size;
++    int tid;
++    int tgid;
++    u64 sockptr;
++    u64 skuptr;
++    int reason;
++};
++
+ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
+ 			   int push_one, gfp_t gfp);
+ 
+@@ -2275,6 +2292,23 @@ void tcp_chrono_stop(struct sock *sk, const enum tcp_chrono type)
+ 		tcp_chrono_set(tp, TCP_CHRONO_BUSY);
+ }
+ 
++static void generate_shim_tcp_xmit_signal(struct sock *sk, struct sk_buff *buff, int reason)
++{
++    struct shim_tcp_xmit_signal *s;
++    s =(struct shim_tcp_xmit_signal *) __this_cpu_read(shim_signal);
++	if ( s!= NULL)
++	{
++	    s->type = SHIM_TCP_XMIT_TYPE;
++	    s->size = sizeof(struct shim_tcp_xmit_signal);
++	    s->sockptr = (u64)sk;
++	    s->skuptr = (u64)buff;
++	    s->tid = (int)task_pid_nr(current);
++	    s->tgid = (int)task_tgid_nr(current);
++	    s->reason = reason;
++	    s->timestamp = rdtsc();
++	}
++}
++
+ /* This routine writes packets to the network.  It advances the
+  * send_head.  This happens as incoming acks open up the remote
+  * window for us.
+@@ -2299,7 +2333,7 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
+ 	int result;
+ 	bool is_cwnd_limited = false, is_rwnd_limited = false;
+ 	u32 max_segs;
+-
++	
+ 	sent_pkts = 0;
+ 
+ 	tcp_mstamp_refresh(tp);
+@@ -2307,18 +2341,24 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
+ 		/* Do MTU probing. */
+ 		result = tcp_mtu_probe(sk);
+ 		if (!result) {
+-			return false;
+-		} else if (result > 0) {
++		    generate_shim_tcp_xmit_signal(sk, NULL, 1);
++		    return false;
++		}else if (result > 0) {
+ 			sent_pkts = 1;
+ 		}
+ 	}
+ 
++
++
+ 	max_segs = tcp_tso_segs(sk, mss_now);
+ 	while ((skb = tcp_send_head(sk))) {
+ 		unsigned int limit;
+ 
+ 		if (tcp_pacing_check(sk))
++		{		    
++		    generate_shim_tcp_xmit_signal(sk, skb, 2);
+ 			break;
++		}
+ 
+ 		tso_segs = tcp_init_tso_segs(skb, mss_now);
+ 		BUG_ON(!tso_segs);
+@@ -2326,6 +2366,7 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
+ 		if (unlikely(tp->repair) && tp->repair_queue == TCP_SEND_QUEUE) {
+ 			/* "skb_mstamp" is used as a start point for the retransmit timer */
+ 			tcp_update_skb_after_send(tp, skb);
++			generate_shim_tcp_xmit_signal(sk, skb, 3);
+ 			goto repair; /* Skip network transmission */
+ 		}
+ 
+@@ -2334,25 +2375,34 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
+ 			if (push_one == 2)
+ 				/* Force out a loss probe pkt. */
+ 				cwnd_quota = 1;
+-			else
+-				break;
++			else {
++			    generate_shim_tcp_xmit_signal(sk, skb, 3);
++			    break;
++			}
+ 		}
+ 
+ 		if (unlikely(!tcp_snd_wnd_test(tp, skb, mss_now))) {
+-			is_rwnd_limited = true;
+-			break;
++			is_rwnd_limited = true;			
++			    generate_shim_tcp_xmit_signal(sk, skb, 4);
++			    break;			
+ 		}
+ 
+ 		if (tso_segs == 1) {
+ 			if (unlikely(!tcp_nagle_test(tp, skb, mss_now,
+ 						     (tcp_skb_is_last(sk, skb) ?
+ 						      nonagle : TCP_NAGLE_PUSH))))
++			{
++			    generate_shim_tcp_xmit_signal(sk, skb, 5);
+ 				break;
++			}
+ 		} else {
+ 			if (!push_one &&
+ 			    tcp_tso_should_defer(sk, skb, &is_cwnd_limited,
+ 						 max_segs))
++			{
++			    generate_shim_tcp_xmit_signal(sk, skb, 6);
+ 				break;
++			}
+ 		}
+ 
+ 		limit = mss_now;
+@@ -2366,22 +2416,33 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
+ 		if (skb->len > limit &&
+ 		    unlikely(tso_fragment(sk, TCP_FRAG_IN_WRITE_QUEUE,
+ 					  skb, limit, mss_now, gfp)))
++		{
++		    generate_shim_tcp_xmit_signal(sk, skb, 7);
++		    
+ 			break;
++		}
+ 
+ 		if (tcp_small_queue_check(sk, skb, 0))
++		{
++		    generate_shim_tcp_xmit_signal(sk, skb, 8);
+ 			break;
++		}
+ 
+ 		if (unlikely(tcp_transmit_skb(sk, skb, 1, gfp)))
+-			break;
++		{
++		    generate_shim_tcp_xmit_signal(sk, skb, 9);
++		    break;
++		}
+ 
+ repair:
+ 		/* Advance the send_head.  This one is sent out.
+ 		 * This call will increment packets_out.
+ 		 */
+-		tcp_event_new_data_sent(sk, skb);
++		tcp_event_new_data_sent(sk, skb);		
+ 
+ 		tcp_minshall_update(tp, mss_now, skb);
+ 		sent_pkts += tcp_skb_pcount(skb);
++		generate_shim_tcp_xmit_signal(sk, skb, 0);
+ 
+ 		if (push_one)
+ 			break;
+@@ -3615,6 +3676,7 @@ void __tcp_send_ack(struct sock *sk, u32 rcv_nxt)
+ 	skb_set_tcp_pure_ack(buff);
+ 
+ 	/* Send it off, this clears delayed acks for us. */
++	generate_shim_tcp_xmit_signal(sk, buff, 10);
+ 	__tcp_transmit_skb(sk, buff, 0, (__force gfp_t)0, rcv_nxt);
+ }
+ EXPORT_SYMBOL_GPL(__tcp_send_ack);
